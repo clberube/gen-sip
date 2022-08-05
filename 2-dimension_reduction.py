@@ -157,9 +157,6 @@ if save:
 
 df = pd.read_csv(csv_fpath, index_col=0)
 
-# df = np.sqrt(df)
-
-
 fig, ax = plt.subplots()
 cmap = truncate_colormap('bone', minval=0.2, maxval=0.8, n=255)
 kwargs = dict(color=cmap(0.0))
