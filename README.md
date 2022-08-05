@@ -14,7 +14,7 @@ This repository contains all the scripts necessary to reproduce the experimental
 ## Usage
 Simply run the scripts in order to generate the results.
 
-> **Warning**
+> **Note**  
 > It is important not to skip any steps because results from a previous scripts may be used by the following ones.
 
 0. Creates the complex conductivity data by sampling the PPIP model parameter space with the LHS method.
@@ -24,6 +24,6 @@ Simply run the scripts in order to generate the results.
 4. (a) Runs the unconstrained parameter estimation experiment. (b) Runs the conditional parameter estimation experiment.
 5. (a) Samples and plots the unconstrained PPIP model parameter space. (b) Samples and plots the conditional parameter space.
 
-> **Warning**
+> **Warning**  
 > Each script exports some results in the specific folders specified at the top of that script.
 Please create empty folders with the specified names if any "No Such File or Directory" errors are raised when running the scripts.
