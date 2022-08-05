@@ -1,15 +1,14 @@
 # @Author: charles
 # @Date:   2021-05-15 15:05:15
+# @Email:  charles.berube@polymtl.ca
 # @Last modified by:   charles
-# @Last modified time: 2021-05-15 15:05:38
+# @Last modified time: 2022-08-05 15:08:10
 
 
 import math
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.nn.utils.prune as prune
 
 from utilities import softclip
 
@@ -39,11 +38,11 @@ class reg_VAE(nn.Module):
         self.log_sigma = torch.zeros([])
 
     def reconstruction_loss(self, x_hat, x):
-        """ Computes the NLL of the data given the latent variable.
+        """ Computes the NLL of x given z.
         """
         self.log_sigma = ((x - x_hat) ** 2).mean([0, 1], keepdim=True).sqrt().log()
-        # Learning the variance can become unstable in some cases. Softly limiting log_sigma to a minimum of -6
-        # ensures stable training.
+        # Softly limiting log_sigma to a minimum of -6
+        # ensures stable training. (not actually necessary here)
         log_sigma = softclip(self.log_sigma, -6)
         rec = self.gaussian_nll(x_hat, log_sigma, x).sum()
         return rec

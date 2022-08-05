@@ -2,7 +2,7 @@
 # @Date:   2021-09-09 15:09:95
 # @Email:  charles.berube@polymtl.ca
 # @Last modified by:   charles
-# @Last modified time: 2021-09-14 13:09:49
+# @Last modified time: 2022-08-05 15:08:12
 
 
 from .lstm_ae import LSTM_AE

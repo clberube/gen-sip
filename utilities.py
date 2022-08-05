@@ -2,7 +2,7 @@
 # @Date:   2021-09-08 14:09:79
 # @Email:  charles.berube@polymtl.ca
 # @Last modified by:   charles
-# @Last modified time: 2021-09-08 14:09:28
+# @Last modified time: 2022-08-05 15:08:61
 
 
 import os
@@ -21,11 +21,8 @@ warnings.filterwarnings(
     "ignore", message="Initializing zero-element tensors is a no-op")
 
 
-def softclip(tensor, min):
-    """ Clips the tensor values at the minimum value min in a softway.
-    Taken from Handful of Trials """
-    result_tensor = min + F.softplus(tensor - min)
-    return result_tensor
+def softclip(x, min):
+    return min + F.softplus(x - min)
 
 
 def min_max_scale(x):
@@ -169,9 +166,6 @@ def train(model, train_loader, verbose, lr, n_epoch, device=None, beta=None,
     if device is None:
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    # if beta is None:
-    #     beta = torch.ones(n_epoch)
-
     train_losses = ['log_sigma', 'NLL', 'KLD', 'AUX', 'train']
     valid_losses = ['valid']
     grads = ['input_grad_total']
@@ -181,10 +175,6 @@ def train(model, train_loader, verbose, lr, n_epoch, device=None, beta=None,
     history.update({k: np.zeros(n_epoch) for k in valid_losses})
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-
-    # reg_loss = torch.nn.MSELoss(reduction='sum')
-    # reg_loss = torch.nn.L1Loss(reduction='mean')
-    # mlp_loss = torch.nn.BCEWithLogitsLoss()
 
     start_time = timer()
     model.to(device)
@@ -205,10 +195,7 @@ def train(model, train_loader, verbose, lr, n_epoch, device=None, beta=None,
             Xp, mu, logvar, p = model(X, c)
             if y.shape[-1] == 0:
                 AUX = torch.tensor(0)
-            # elif y.shape[-1] == 1:
-            #     AUX = mlp_loss(p, y)
             elif y.shape[-1] > 1:
-                # AUX = reg_loss(p, y)
                 AUX = model.reconstruction_loss(p, y)
 
             NLL, KLD = model.vae_loss(Xp, X, mu, logvar)
@@ -221,8 +208,6 @@ def train(model, train_loader, verbose, lr, n_epoch, device=None, beta=None,
             running_loss['AUX'] += AUX.item()*X.size(0)
             running_loss['train'] += total_loss.item()
 
-            # if (e + 1 == n_epoch) and (c.shape[-1] > 0):
-            # if (e == 0) and (c.shape[-1] > 0):
             if c.shape[-1] > 0:
                 y_grad_total = torch.autograd.grad(
                     NLL, c, retain_graph=True)[0]
@@ -256,16 +241,10 @@ def train(model, train_loader, verbose, lr, n_epoch, device=None, beta=None,
                 Xp, mu, logvar, p = model(X, c)
                 if y.shape[-1] == 0:
                     AUX = torch.tensor(0)
-                # elif y.shape[-1] == 1:
-                #     AUX = mlp_loss(p, y)
                 elif y.shape[-1] > 1:
-                    # AUX = reg_loss(p, y)
                     AUX = model.reconstruction_loss(p, y)
 
                 NLL, KLD = model.vae_loss(Xp, X, mu, logvar)
-                # total_loss = NLL + beta[e]*KLD + AUX
-                # NLL_scaled = X.shape[-1]*NLL/(2*logvar.exp())
-                # total_loss = X.shape[-1]*sigma.log() + NLL_scaled + KLD + AUX
                 total_loss = NLL + KLD + AUX
                 running_loss['valid'] += total_loss.item()
 
