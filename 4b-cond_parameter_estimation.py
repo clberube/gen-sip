@@ -12,7 +12,6 @@ import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn import metrics
 import seaborn as sns
